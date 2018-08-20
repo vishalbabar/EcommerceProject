@@ -1,0 +1,246 @@
+<html>
+	<head>
+			<link rel="shortcut icon" href="vassicon.ico" />
+			<link rel = "stylesheet" href = "history.css">
+			<title>Vass</title>
+		<style type="text/css">
+		.divcls{
+				background-color:#96C5C7;}
+				.SearchBar {
+                top: 355px;
+                left: 575px;
+                height:30px;
+                width: 500px;
+            }
+		.divClass{
+		float:left;
+	    width: 100%;
+	    padding:75px;
+	}
+	.tableCls {
+	    border: 1px solid black; 
+	}
+	body{
+	 background-color: lightgrey;	
+	}
+	.buttonCls{
+		text-decoration: none;
+		background-color:#3E7876;
+		width:120px;
+		height: 30px;
+	}
+	.divTable{
+		text-align: right;
+	}
+	.selectCls{
+		width:"100px";
+		height:"35px"
+	}
+	.cart3{
+    margin: auto;
+    margin-bottom:6px;
+    width: 40%;
+    padding: 10px;
+}
+		</style>
+		<script>
+	function bigImg(x) {
+	    x.style.height = "400px";
+	    x.style.width = "500px";
+	}
+
+	function normalImg(x) {
+	    x.style.height = "400px";
+	    x.style.width = "400px";
+	}
+	
+	</script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.2/angular.min.js"></script>
+	<script type="text/javascript">
+
+		
+		var app=angular.module('angularApp1',[]);
+		app.controller('angularcntrl1',function($scope,$filter,$log,$http){
+			$scope.sampleFunction=function(searchterm1){
+                       window.location='index.html?searchterm='+searchterm1;
+                   }
+							$scope.buttonName="";
+ if(sessionStorage.getItem("userId")!==null){
+     $scope.buttonName="LOG OUT";
+   }
+   else{
+     $scope.buttonName="LOG IN";
+   }
+ $log.info(sessionStorage.getItem("userId"));
+ $scope.buttonClick=function(){
+   if($scope.buttonName=="LOG IN"){
+     window.location="login.html";
+   }
+   else if($scope.buttonName=="LOG OUT")
+   {
+     sessionStorage.clear();
+     window.location="index.html";
+   }
+ }
+				$scope.merchatid1='';
+				$scope.productid1='';
+				$scope.userid4='';
+				$scope.productname='';
+				$scope.descrip='';
+				$scope.imge='';
+				$scope.merchantname='';
+	var urlParams = new URLSearchParams(window.location.search);
+	$scope.product_id = urlParams.get('product_id');
+	console.log($scope.product_id);
+	
+	
+	
+	
+				 var static=0;
+				 $scope.userid4="user2";
+				$http.get('http://10.177.2.81:8080/product/get/'+$scope.product_id)
+				.then(function(response){
+				$scope.user=response.data;
+				$scope.keys=Object.keys($scope.user.attributes);
+                $scope.values=$scope.user.attributes;
+				$scope.descrip=response.data.description;
+				$log.info(response.data.description);
+				$scope.productid=response.data.productId;
+				$scope.productname=response.data.name;
+				$scope.imge=response.data.imagepath;
+				$scope.merchantid1=response.data.merchantEntityList[0].merchantId;
+				$scope.merchantname=response.data.merchantEntityList[0].merchantName;
+			console.log($scope.merchantname);
+			console.log($scope.productname);
+				
+				$scope.email=sessionStorage.getItem("userId");
+				//$scope.merchantid1,
+				$scope.sampleFunc=function(merchant_id,MerchantName,Productname,Quantity){
+					var data = {
+					  cartid : "cart1",
+					  productid : $scope.productid,
+					  merchantid :$scope.merchantselected,
+					  userid: $scope.email,
+					  quantity : Quantity
+					}
+					if(Quantity>0){
+						$http.get('http://10.177.2.81:8080/product/checkForQuantity/' + $scope.productid + '/' + $scope.merchantselected + '/' + Quantity)
+				.then(function (response) {
+					// $log.info(response);
+					$scope.success = response.data.response;
+					console.log(response);
+					console.log(response.data.response);
+				
+					if ($scope.success == "success") {
+						console.log("ok");
+
+					$http.post('http://10.177.2.144:8083/cart/addtocart/', data, {header: {Accept: "Application:json ; charset=utf-8"}}).then(function(response){
+						$scope.cartdetails=response.data;
+						$log.info(response.data);
+						$log.info("abcd");
+					});
+					  
+					alert("Added to cart successfully");
+						}
+					else{
+					alert(" no quantity ");
+				
+					}
+			});
+			
+		
+				
+		
+		}
+			else{
+				alert(" select quantity should be more than 0 ");
+				 }
+				
+				
+				}
+		$http.get('http://10.177.2.81:8080/product/getmerchantwrapperlist/'+$scope.product_id)
+		.then(function(response){
+		$scope.merchant=response.data;
+		$log.info($scope.merchant);
+		$log.info("reached");
+		
+		});
+	
+				static++;
+			  $scope.sampleFunc1=function(){
+				$http.get('http://localhost:8080/order/sendemail/vishalbabar.4041@gmail.com/subject/message')
+				.then(function(response){
+								 alert("Added to Cart successfully!!!");
+	
+			});
+			}
+			$scope.merchantname2="";
+			$scope.hello=function(merchantselected){
+			  $scope.merchantname2=merchantselected;
+			}
+		});
+	});
+				</script>
+	</head>
+	<body>
+		
+			<div  ng-app="angularApp1" ng-controller="angularcntrl1" >
+					<div class="divcls"><br>
+						<div align="center" display="flex">
+							<img src="logo2.png" alt="image loading..wait" height="100" width="180"/>
+						<select height="25" class="menu" name="attributes" ng-model="selectedtype" ng-change="selectingOption(selectedtype)">
+						  <option value="" selected>Select Type</option>
+						  <option value="Phone">phones</option>
+						  <option value="book">books</option>
+						  <option value="shoes">shoes</option>
+						</select>
+						<input class="SearchBar" text-align="center" type="text" placeholder="search.." size="100" ng-model="searchterm"/>
+						<button ng-click="sampleFunction(searchterm)">search</button>
+					  </div>
+					  <div align="right"><br>
+						<button onclick="window.location='cartpractice.html'">Cart</button>
+						<button onclick="window.location='profile.html'">Profile</button>
+						<button onclick="window.location='history1.html'">My Orders</button>
+						<button onclick="location.href='index.html'">Home</button>
+						<button ng-click="buttonClick()">{{buttonName}}</button>
+							  </div>
+					  </div>
+					  <div class="cart3">
+					  <div class="divClass">
+				<img onmouseover="bigImg(this)" onmouseout="normalImg(this)" src="{{imge}}" alt="image is loading.. wait"/>
+				<table>
+					<tr ng-model="productname"><th>{{productname}}</th></tr>
+					<tr><td><hr></td></tr>
+					<tr ><td>Sold by <b> {{merchantname}} </b> reviw {{merchantReview}} and Fulfilled by Vass Online Shopping</td></tr>
+					<!-- <tr ng-model="merchantname"><td>{{merchantNames}} </td></tr> -->
+					<tr><td>{{descrip}}</td></tr>
+					<tr><br></tr>
+					<tr><br></tr>
+					<tr><br></tr></table><br/><br/>
+					<b>attributes:</b><br>
+					<div text-align="center">
+					<li ng-repeat="productkey in keys">
+							{{productkey}} :{{values[productkey]}}
+					</li>
+					</div>
+					<div ng-repeat="y in user">{{y.attributes}}</div>
+					<div class="divTable" id="App1"   >
+<div ><table class="tableCls"> <tr class="tableCls" ng-repeat="x in merchant" ><td>{{x.merchantName}}</td><td>{{x.price}}</td><td>{{x.location}}</td><td>{{x.review}}</td></tr>
+
+</div>
+		</div>
+					</table><br>
+					<div align="left">Select Merchant:<select class="selectCls" name="merchantList" ng-model="merchantselected" ng-change="hello(merchantselected)" width="300">
+						
+						<option value="{{x.merchantId}}" ng-repeat="x in merchant">{{x.merchantName}}</option>
+					</select></div><br><br>
+					<div align="left" ng-model="merchantName41">
+					Quantity:<input type="number"   min=1 ng-model="x.quantity"/><br><br><br>
+					<button class="buttonCls" ng-click="sampleFunc(x.merchantId,merchantname,productname,x.quantity)">add to cart</button>
+			    	<button  class="buttonCls" ng-click="sampleFunc1()">Buy Now</button>
+					</div>
+				</div>
+			</div>
+					</div>
+		</body>
+		</html>

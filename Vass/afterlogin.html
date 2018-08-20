@@ -1,0 +1,174 @@
+
+<html>
+<head>
+	<!-- <link rel="shortcut icon" href="vassicon.icon" /> -->
+	<title>Vass</title>
+	<link rel="stylesheet" type="text/css" href="homecss.css"/>
+
+
+<style type="text/css">
+	.cart3{
+			display: flex;
+			flex-direction: row;
+			background-color: white;
+			height: 320px;
+			width: 900px;
+			padding-right: 30px;
+			margin:4%;
+
+		}
+		.cart2{
+			background-color: white;
+			;
+			height: 30px;
+			padding-bottom: 20px;
+	}	
+
+	.class4{
+		font-size: 20;
+		color: #0066c0;
+	}
+	.class5{
+		font-size: 15;
+	}
+	.class6{
+		color:red;
+		font-size: 15;
+	}
+
+	.class31{
+position: relative;
+background-color: white;
+height: 270px;
+			width: "40%";
+
+
+	padding: 20px;
+	margin: 1%;
+	} 
+
+	.class34{
+position: relative;
+background-color: white;
+height: 200px;
+			width: 300px;
+
+padding-top: 60px;
+	
+	margin: 1%;
+	} 
+	.class32{
+		font-size: 20;
+		color: #0066c0;
+	}
+
+</style>
+
+
+
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.2/angular.min.js"></script>
+		<script type="text/javascript">
+		var app=angular.module('angularApp12',[]);
+		app.controller('angularcntrl12',function($scope,$filter,$log,$http){
+			$scope.sampleFunc=function(){
+			 	alert("added to cart");
+			}
+			});
+
+
+var app=angular.module('angularApp1',[]);
+		app.controller('angularcntrl1',function($scope,$filter,$log,$http){
+		
+		$scope.productid12='';
+		$scope.merchatid='';
+		$scope.productid='';
+		$scope.userid4='';
+$scope.allproduct=[];
+$scope.allproduct1='';
+ var static=0;
+$http.get('http://10.177.2.81:8080/product/getAllProducts')
+.then(function(response){
+
+$log.info(response.data);
+
+
+$scope.cart=response.data;
+ 
+$log.info(response.data.description);
+
+$scope.productid=response.data[0].productId;
+
+
+//$scope.merchantid=response.data.merchantEntityList[0].merchantId;
+$scope.userid4=response.data.userId;
+
+
+      $scope.sampleFunc1=function(){
+$http.get('http://localhost:8080/order/sendemail/vishalbabar.4041@gmail.com/subject/message')
+.then(function(response){
+	 alert("Added to Cart successfully!!!");
+});
+     }
+  });
+
+
+
+ });
+
+
+
+
+</script>
+
+</head>
+<body>
+	<!-- <div class="divcls"> -->
+		<!-- <div align="center" display="flex" >
+		<select height="25" class="menu" name="attributes">
+			<option value="Phones">phones</option>
+			<option value="books">books</option>
+			<option value="cloths">cloths</option>
+		</select>
+		<input class="SearchBar" text-align="center" type="text" placeholder="search.." size="100"/>
+		<button><image src="search.png" height="20" width="30"></button>
+	</div>
+	</div> -->
+
+
+	
+
+
+
+
+	
+	<div  ng-app="angularApp1" ng-controller="angularcntrl1"><br>
+		
+		<!-- <div align="right"><br>
+			<button onclick="location.href = 'cart.html';">Cart</button>
+		</div> -->
+
+	<div class="cart3" ng-repeat="x in cart">
+<div ><img  class="class31" src="{{x.imagepath}}" alt="image not found" width="280" height="300" onclick="window.open('productdescription.html')"></div>
+		
+		
+			<div class="class34">
+				<table  align="center">
+<tr><td class="class32"align="center"><a href="productdesc.html?product_id={{x.productId}}" >{{x.name}}</a></td></tr>
+{{productid12}}
+
+<tr ><td class="class32"align="center" onclick="window.open('product_description.html')">Sold By {{x.merchantEntityList[0].merchantName}}</td></tr>
+
+<tr ><td class="class32"align="center" onclick="window.open('productdescription.html')">${{x.merchantEntityList[0].price}}</td></tr>
+<tr align="center"><td><button class="btn btn-small" ng-click="add()">Add</button></td></tr>
+
+				<!-- <td align="center" onclick="window.open('product_description.html')">second image</td>
+				<td align="center" onclick="window.open('product_description.html')">third image</td>
+				<td align="center" onclick="window.open('product_description.html')">fourth image</td></tr> -->
+		</table>
+		</div>
+	</div>
+	{{searchterm}}
+</div>
+</body>
+</html>

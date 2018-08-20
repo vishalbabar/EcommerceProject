@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel = "stylesheet" href = "login.css">
+    <style>
+        .divcls{
+          background-color:#96C5C7;}
+          .SearchBar {
+                  top: 355px;
+                  left: 575px;
+                  height:30px;
+                  width: 500px;
+              }
+      </style>
+    <script src = "https://ajax.googleapis.com/ajax/libs/angularjs/1.7.2/angular.min.js">
+    </script>
+
+    <script>
+          var app=angular.module("profileapp",[]);
+              app.controller('profilecontroller',function($scope,$http,$window,$log){
+                $scope.sampleFunction=function(searchterm1){
+                       window.location='index.html?searchterm='+searchterm1;
+                   }
+                $scope.buttonName="";
+ if(sessionStorage.getItem("userId")!==null){
+     $scope.buttonName="LOG OUT";
+   }
+   else{
+     $scope.buttonName="LOG IN";
+   }
+ $log.info(sessionStorage.getItem("userId"));
+ $scope.buttonClick=function(){
+   if($scope.buttonName=="LOG IN"){
+     window.location="login.html";
+   }
+   else if($scope.buttonName=="LOG OUT")
+   {
+     sessionStorage.clear();
+     window.location="search.html";
+   }
+ }
+
+                    $http.get("http://10.177.2.37:8080/user/getprofile/"+sessionStorage.getItem("userId")).then(function(response){
+                $scope.user = response.data;
+                    });
+                    $scope.sendData = function(){
+                    var data = {
+                      userid:sessionStorage.getItem("userId"),
+                      firstName : $scope.user.firstName,
+                      lastName : $scope.user.lastName,
+                      phoneNumber : $scope.user.phoneNumber,
+                      emailId : sessionStorage.getItem("email"),
+                      password : $scope.user.password
+                    }
+                    $http.post('http://10.177.2.37:8080/user/editprofile', data, {header: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function(response){
+                      if(response.data) {
+                        alert("Updated successfully!!!");
+                        window.location="index.html";
+                      }
+                      else {
+                        alert("Try Again!!!");
+                        window.location="profile.html";
+                      }
+                    });
+                  }
+              });
+              app.config(['$qProvider', function ($qProvider) {
+                $qProvider.errorOnUnhandledRejections(false);
+              }]);
+    </script>
+</head>
+
+
+<body align = "center">
+ 
+  <div ng-app = "profileapp" ng-controller = "profilecontroller" name = "profileform" align = "center">
+      <div class="divcls"><br>
+        <div align="center" display="flex">
+          <img src="logo2.png" alt="image loading..wait" height="100" width="180"/>
+        <select height="25" class="menu" name="attributes" ng-model="selectedtype" ng-change="sampleFunction1(selectedtype)">
+          <option value="" selected>Select Type</option>
+          <option value="Phone">phones</option>
+          <option value="book">books</option>
+          <option value="shoes">shoes</option>
+        </select>
+        <input class="SearchBar" text-align="center" type="text" placeholder="search.." size="100" ng-model="searchterm"/>
+        <button ng-click="sampleFunction(searchterm)">search</button>
+        </div>
+        <div align="right"><br>
+        <button onclick="window.location='cartpractice.html'">Cart</button>
+        <button onclick="window.location='profile.html'">Profile</button>
+        <button onclick="window.location='history1.html'">My Orders</button>
+        <button onclick="location.href='index.html'">Home</button>
+        <button ng-click="buttonClick()">{{buttonName}}</button>
+            </div>
+        </div>
+        <div class="divcls"><h1>Edit Account</h1></div>
+    <div name = "profilediv" class="container">
+          <label><b>First Name</b></label> <br>
+          <input id = "first" type="text" ng-model="user.firstName" required> <br>
+          <span "profileform.profilediv.$invalid"></span>
+
+          <label><b>Last Name</b></label><br>
+          <input id = "last" type="text" ng-model="user.lastName" required><br>
+          <span "profileform.profilediv.$invalid"></span>
+
+          <label><b>Phone Number</b></label><br>
+          <input id = "phone" type="number" ng-model="user.phoneNumber" required><br>
+          <span "profileform.profilediv.$invalid"></span>
+          
+          <label><b>Password</b></label><br>
+          <input id = "password" type="password" ng-model="user.password" required><br><br>
+          <span "profileform.profilediv.$invalid"></span>
+
+          <button type="submit" ng-click = sendData()>Save Changes</button>
+    </div>
+    </div>
+</body>
+
+</html>

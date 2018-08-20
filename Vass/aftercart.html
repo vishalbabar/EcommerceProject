@@ -1,0 +1,132 @@
+	<html>
+	<head>
+		<style type="text/css">
+		.cart{
+			background-color: navy;
+			height: 80px;
+			padding-bottom: 20px;
+
+	}	
+		.cart3{
+			display: flex;
+			flex-direction: row;
+			background-color: orange;
+			height: 70px;
+			width: "40%";
+			padding-right: 30px;
+			margin:4%;
+			
+			
+		}
+	</style>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.2/angular.min.js"></script>
+
+	<script type="text/javascript">
+		var app=angular.module('angularApp1',[]);
+		app.controller('MainCtrl', function ($scope,$filter,$log,$http) {
+
+$scope.user='';
+$scope.userid1='';
+$scope.userid2='';
+$scope.userid3=[];
+$scope.nad=[];
+$http.get('http://localhost:8083/cart/allcartitems')
+.then(function(response){
+
+ user=response.data;
+	nad=response.data;
+$scope.userid1=nad[0].userid;
+$log.info(userid1);
+
+
+//$log.info(response);
+});
+
+
+$http.get('http://10.177.2.81:8080/product/get/product2')
+.then(function(response){
+
+$log.info(response.data);
+
+$scope.user=response.data;
+
+
+$log.info(response.data.description);
+
+$scope.userid2=response.data.name;
+$scope.userid3=response.data.merchantEntityList[0].merchantName;
+//  user=response.data;
+// 	nad=response.data;
+// $scope.userid1=nad[0].userid;
+// $log.info(userid1);
+$log.info(userid2);
+
+//$log.info(response);
+});
+
+      $scope.sampleFunc1=function(){
+$http.get('http://localhost:8084/order/sendemail/vishalbabar.4041@gmail.com/subject/message')
+.then(function(response){
+	 alert("Added to Cart successfully!!!");
+});
+
+
+
+
+
+      }
+
+ });
+ 	
+	</script>
+
+
+
+
+
+
+
+
+
+
+
+
+	
+</head>
+<body>
+	<div class="cart">
+	</div>
+	<div class="cart12">
+		<form name="cartservice">
+			<div class="cart1"></div>
+			<div ng-app="angularApp1" ng-controller="MainCtrl" >
+	  	<div   class="cart3" >
+	  		<table  width="100%" >
+	  			<div><th>Product Name</th></div>
+	  			<div><th>Merchant Name</th></div>
+	  			<div><th>Price</th></div>
+	  			<div><th>Quantity</th></div>
+	  			
+	  			<tr align="center">
+	  				
+
+	  					
+	  				<td>{{userid2}}</td>
+	  				<td>Sold By <br>{{userid3}}</td>
+	  				<td>25000</td>
+	  				<td><input type="number"/></td>
+
+	  				<td><button>Update Quantity</button></td>
+	  				<td><button ng-click="sampleFunc1()">BuyNow</button></td>
+	  				
+	  				
+	  			</tr>
+	  		</table>
+	  		</li>
+	  	
+	  </div>
+	</div>
+</form>
+</div>
+</body>
+</html>

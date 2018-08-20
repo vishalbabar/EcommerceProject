@@ -1,0 +1,367 @@
+
+	<html>
+	<head>
+		<link rel = "stylesheet" href = "basic.css">
+
+		<style type="text/css">
+		.cart{
+			background-color: navy;
+			height: 80px;
+			padding-bottom: 20px;
+
+	}	
+		.cart3{
+			display: flex;
+			flex-direction: row;
+			background-color: orange;
+			height: 70px;
+			width: "40%";
+			padding-right: 30px;
+			margin:4%;
+			
+			
+		}
+	</style>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.2/angular.min.js"></script>
+
+	<script type="text/javascript">
+		var app=angular.module('angularApp1',[]);
+		app.controller('MainCtrl', function ($scope,$filter,$log,$http) {
+
+
+// $scope.user='';
+// $scope.userid='';
+// $scope.userid1='';
+// $scope.userid2='';
+
+// 	  $scope.userid='';
+	  $scope.userid=localStorage.getItem("userId");
+	  $scope.email=localStorage.getItem("email");
+   
+
+
+
+// //+'localStorage.getItem("userId")
+$http.get('http://localhost:8083/cart/usercartitemswithname/'+localStorage.getItem("userId"))
+.then(function(response){
+$scope.cart1=response.data;
+ 
+ $scope.cartid1=response.data.cartid;
+
+console.log($scope.cart1);
+
+ 
+});
+
+
+// $http.get('http://localhost:8083/cart/usercartitems/'+localStorage.getItem("userId"))
+// .then(function(response){
+// 	$scope.cart=response.data; 
+// });
+
+// var urlParams = new URLSearchParams(window.location.search);
+// $scope.product_id = urlParams.get('product_id');
+// $scope.merchant_id=urlParams.get('merchant_id');
+// console.log($scope.product_id);
+
+
+// $scope.sampleFunc2=function(cartId){
+// $http.get('http://localhost:8083/cart/removefromcart/'+cartId)
+// .then(function(response){
+
+// $log.info("deleted");
+// 	 alert("Added to Cart successfully!!!");
+// });
+//      }
+ 
+
+
+
+// $scope.sampleFunc3=function(cartId, Quantity){
+// 	console.log(cartId);
+
+// 	var data = {
+// 				  cartid:cartId,
+// 				  quantity:Quantity
+// 	            }
+
+// 	$http.post('http://localhost:8083/cart/updatetocart/'+cartId+'/'+Quantity, {header: {Accept: "Application:json ; charset=utf-8"}}).then(function(response){
+// 	            	$log.info(response.data);
+	              
+// 	                log.info("updated");
+	              
+// 	            });
+
+//      }
+ 
+
+
+// $scope.sampleFunc4=function(){
+
+// $http.get('http://localhost:8083/cart/removeallfromcart/'+localStorage.getItem("userId"))
+// .then(function(response){
+
+// $log.info("deleted");
+// 	 alert("removed from cart successfully!!!");
+// });
+//      }
+ 
+
+
+       $scope.sampleFuncMail=function(productId,merchantId,Quantity,userId,Price,cartId){
+
+
+
+
+		// if(localStorage.getItem("userId")==null){
+		// 	alert('not registered');
+        // }
+        
+        $http.get('http://10.177.2.81:8080/product/checkForQuantity/'+productId+'/'+merchantId+'/'+Quantity).then(function(response){
+                    // $log.info(response);
+                    $scope.success=response.data.response;
+                    console.log(response);
+                    console.log(response.data.response);
+
+                    if($scope.success=="success")
+                    {
+                        console.log("ok");
+
+
+                $http.get('http://10.177.2.81:8080/product/updateQuantity/'+productId+'/'+merchantId+'/'+Quantity).then(function(response){
+					// $log.info(response);
+					
+					$scope.success11=response.data.response;
+					console.log(response);
+					
+					if($scope.success11=="success")
+                    {
+						$http.post('http://localhost:8086/order/addorder/', data, {header: {Accept: "Application:json ; charset=utf-8"}}).then(function(response){
+	            	$log.info(response.data);
+	              
+	                window.location="productdesc.html";
+	              
+				});
+
+				$http.get('http://10.177.2.81:8081/merchant/updateMerchantQuantity/'+merchantId+'/'+Quantity).then(function(response){
+					$log.info(response);
+				
+				});
+				$http.get('http://localhost:8086/order/sendemail/'+localStorage.getItem("email")+'/subject/thanksforordering')
+.then(function(response){
+	 alert("sent mail successfully!!!");
+
+});
+
+					}
+				
+				});
+
+			}
+
+				else{
+                        alert("order not successfull");
+                    }
+
+
+				
+				
+
+
+
+					
+				
+                    
+				
+				});
+			}
+// 	            var data = {
+// 					// new Date().toLocaleDateString()
+// 	              productid :productId,
+// 	              merchantid : merchantId,
+// 	              userid: $scope.email,
+// 				  quantity : Quantity,
+// 				  addressid:"add1",
+// 				  dateofpurchase:"2018-08-16",
+// 				  orderprice:Price
+// 	            }
+// 	            $http.post('http://localhost:8086/order/addorder/', data, {header: {Accept: "Application:json ; charset=utf-8"}}).then(function(response){
+// 	            	$log.info(response.data);
+	              
+// 	                window.location="productdesc.html";
+	              
+// 				});
+				
+
+
+				
+// 				$http.get('http://10.177.2.81:8081/merchant/updateMerchantQuantity/'+merchantId+'/'+Quantity).then(function(response){
+// 					$log.info(response);
+				
+// 				});
+
+
+// $http.get('http://localhost:8086/order/sendemail/'+localStorage.getItem("email")+'/subject/thanksforordering')
+// .then(function(response){
+// 	 alert("sent mail successfully!!!");
+
+// });
+// }
+
+// $http.get('http://localhost:8083/cart/removefromcart/'+cartId)
+// .then(function(response){
+
+// $log.info("deleted");
+// 	 alert("Deleted from Cart successfully!!!");
+// });
+
+
+
+// }
+	
+
+
+
+
+
+
+
+
+
+// $scope.BuyAll=function(){
+
+
+// if(localStorage.getItem("userId")==null){
+// 	alert('not registered');
+// }
+
+// 		var data = {
+// 			// new Date().toLocaleDateString()
+// 		  productid :productId,
+// 		  merchantid : merchantId,
+// 		  userid: $scope.email,
+// 		  quantity : Quantity,
+// 		  addressid:"add1",
+// 		  dateofpurchase:"2018-08-16",
+// 		  orderprice:Price
+// 		}
+// 		$http.post('http://localhost:8086/order/addorder/', data, {header: {Accept: "Application:json ; charset=utf-8"}}).then(function(response){
+// 			$log.info(response.data);
+		  
+// 			window.location="productdesc.html";
+		  
+// 		});
+		
+
+
+// 		$http.get('http://10.177.2.81:8080/product/updateQuantity/'+productId+'/'+merchantId+'/'+Quantity).then(function(response){
+// 			$log.info(response);
+		
+// 		});
+// 		$http.get('http://10.177.2.81:8081/merchant/updateMerchantQuantity/'+merchantId+'/'+Quantity).then(function(response){
+// 			$log.info(response);
+		
+// 		});
+
+
+// $http.get('http://localhost:8086/order/sendemail/'+localStorage.getItem("email")+'/subject/thanksforordering')
+// .then(function(response){
+// alert("sent mail successfully!!!");
+
+// });
+
+// $http.get('http://localhost:8083/cart/removefromcart/'+cartId)
+// .then(function(response){
+
+// $log.info("deleted");
+// alert("Deleted from Cart successfully!!!");
+// });
+
+
+
+// }
+
+
+
+
+
+
+     });
+
+
+// $scope.sampleFuncUpdate=function(cartId, Quantity){
+// 	            var data = {
+	          
+// 	              quantity : Quantity
+// 	            }
+// 	            $http.post('http://localhost:8083/cart/updatetocart/'+cartId+'/', data, {header: {Accept: "Application:json ; charset=utf-8"}}).then(function(response){
+// 	            	$log.info(response.data);
+	             
+// 	            });
+// 	         }
+
+
+
+ 
+ 	
+	</script>
+
+</head>
+<body>
+	<div class="cart" align="right">
+		
+	</div>
+	<div class="cart12">
+		
+		<form name="cartservice">
+			<div class="cart1">
+				
+			</div>
+
+			<div ng-app="angularApp1" ng-controller="MainCtrl">
+				<!-- <div ng-repeat="website in userse.websites"> -->
+					<div class="cart78" align="right">
+		<button ng-click="sampleFunc4()">DeleteAll</button>
+		<button ng-click="sampleFunc5()">BuyAll</button>
+	</div>
+	  	<div   ng-repeat="item in cart1 track by $index" class="cart3"  >
+	  		<table  width="100%" >
+	  			<div><th>Product Name</th></div>
+	  			<div><th>Merchant Name</th></div>
+				  <div><th>userid</th></div>
+				  <div><th>price</th></div>
+	  			<div><th>Quantity</th></div>
+	  			
+	  			<tr align="center">
+
+
+ <tr  align="center">
+                      <td ng-model="productname1"  >{{item.productName}}</td>
+                      <td ng-model="merchantname1" >{{item.merchantName}}</td>
+					 
+					  
+					   <td ng-model="userid" >{{userid}}</td>
+					   <td ng-model="price" >{{item.price*cart[$index].quantity}} </td>
+					   <td> <input type="number" min="0" max="99" ng-model="cart[$index].quantity" /></td>
+
+ <!-- ng-model="example.value" -->
+                     
+					  <td></td>
+					  	<td><button ng-click="sampleFunc3(cart[$index].cartid, cart[$index].quantity)">Update Quantity</button></td>
+	  					<td><button ng-click="sampleFunc2(cart[$index].cartid)">Remove</button></td>
+	  					<td><button ng-click="sampleFuncMail(cart[$index].productid,cart[$index].merchantid,cart[$index].quantity,cart[$index].userid,item.price,cart[$index].cartid)">BuyNow</button></td>
+					</div>
+         				
+	  				
+				 </tr>
+				 </div>
+             </tr>
+         </table>
+	</div>
+</div>
+</form>
+</div>
+</body>
+</html>
+
+	

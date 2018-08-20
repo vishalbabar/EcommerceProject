@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+
+  <html>
+    <head>
+        <link rel="shortcut icon" href="vassicon.ico" />
+        <title>Vass</title>
+  <script src = "https://ajax.googleapis.com/ajax/libs/angularjs/1.7.2/angular.min.js">
+      </script>
+    <link rel = "stylesheet" href = "login.css">
+    <link rel = "stylesheet" href = "history.css">
+      <script>
+        var app = angular.module('loginapp',[]);
+        app.controller('logincontroller', function($scope, $http,$window) {
+          $scope.sendData = function(){
+          $http.get('http://10.177.2.37:8080/user/login/'+$scope.emailId+'/'+$scope.password).then(function(response){
+            $scope.user = response.data;
+            if($scope.emailId == null || $scope.password == null) {
+              alert("Enter the details");
+              window.location= "login.html"
+            }
+            else if($scope.user.emailId == $scope.emailId && $scope.user.password == $scope.password) {
+              $window.sessionStorage.setItem("userId" ,$scope.user.userid);
+             $window.sessionStorage.setItem("email" ,$scope.emailId);
+             window.location="index.html"
+            }
+            else {
+              alert("Invalid credentials");
+              window.location= "login.html"
+            }
+          });
+        }
+      });
+      </script>
+        <link rel = "stylesheet" ref = "login.css">
+    </head>
+    <body align = "center">
+      <h2><div class = "heading"><br>Login Form </div></h2>
+      <form ng-app = "loginapp" ng-controller = "logincontroller" name = "loginform" align = "center">
+      <div name = "logindiv" class="container">
+
+        <label><b>E-mail Id</b></label> <br>
+
+        <input type="email" placeholder="Enter E-mail" ng-model="emailId" required> <br>
+        <span ng-show="loginform.logindiv.$invalid"></span>
+
+
+        <label><b>Password</b></label><br>
+
+        <input type="password" placeholder="Enter Password" ng-model="password" required><br><br>
+         <span ng-show="loginform.logindiv.$invalid"></span>
+
+        <button type="submit" ng-click = "sendData()">Login</button>
+
+      </div>
+
+    </form>
+
+    <div class = "signup"  align = "center">
+        New User? <br>
+    <button type  ="submit" onclick="window.location = 'signup.html'"> Create User Account </button>
+
+    </div>
+  </body>
+
+  </html>

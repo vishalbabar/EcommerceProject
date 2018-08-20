@@ -1,0 +1,146 @@
+<!DOCTYPE>
+<html>
+<head>
+	<style type="text/css">
+	.divClass{
+	float:left;
+    width: 25%;
+    padding:75px;
+}
+.buttonCls{
+	text-decoration: none;
+	background-color: green;
+	width:120px;
+	height: 30px;
+}
+	</style>
+	<script>
+function bigImg(x) {
+    x.style.height = "800px";
+    x.style.width = "800px";
+}
+
+function normalImg(x) {
+    x.style.height = "400px";
+    x.style.width = "400px";
+}
+</script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.2/angular.min.js"></script>
+		<script type="text/javascript">
+		// var app=angular.module('angularApp12',[]);
+		// app.controller('angularcntrl12',function($scope,$filter,$log,$http){
+		// 	$scope.sampleFunc=function(){
+		// 	 	alert("added to cart");
+		// 	}
+		// 	});
+
+
+var app=angular.module('angularApp1',[]);
+		app.controller('angularcntrl1',function($scope,$filter,$log,$http){
+		
+		$scope.merchatid='';
+		$scope.productid='';
+		$scope.userid4='';
+$scope.productname='';
+$scope.descrip='';
+	
+var urlParams = new URLSearchParams(window.location.search);
+$scope.product_id = urlParams.get('product_id');
+console.log($scope.product_id);
+ var static=0;
+$http.get('http://10.177.2.81:8080/product/get/product3')
+.then(function(response){
+$scope.user=response.data;
+$scope.descrip=response.data.description;
+$log.info(response.data.description);
+$scope.productid=response.data.productId;
+$scope.productname=response.data.name;
+$scope.merchantid=response.data.merchantEntityList[0].merchantId;
+$scope.userid4=response.data.userId;
+
+
+$scope.sampleFunc=function(){
+            var data = {
+              cartid : "4",
+              productid : $scope.product_id,
+              merchantid : $scope.merchantid,
+              userid: $scope.userid4,
+              quantity : 2
+            }
+            $http.post('http://localhost:8083/cart/addtocart/', data, {header: {Accept: "Application:json ; charset=utf-8"}}).then(function(response){
+            	$log.info(response.data);
+              if(response.data) {
+                alert("Added to Cart successfully!!!");
+                window.location="/Users/vishal/Documents/cartpractice.html";
+              }
+              else {
+                alert("Try Again!!!");
+                window.location="/Users/vishal/Documents/Vass/signup.html";
+              }
+            });
+             }
+          });
+
+static++;
+    
+
+
+
+
+      $scope.sampleFunc1=function(){
+
+
+
+$http.get('http://localhost:8080/order/sendemail/vishalbabar.4041@gmail.com/subject/message')
+.then(function(response){
+
+
+	 alert("Added to Cart successfully!!!");
+
+
+
+});
+
+
+
+
+
+      }
+  });
+
+
+
+
+
+
+
+
+		
+
+		</script>
+</head>
+<body>
+	<div>
+		<div class="divClass"><img onmouseover="bigImg(this)" onmouseout="normalImg(this)" src="apple5s.png" alt="image is loading.. wait"/></div>
+		<div class="divClass" ng-app="angularApp1" ng-controller="angularcntrl1">
+			<div class="divClass">
+			<table>
+				<tr><th>{{productname}}</th></tr>
+				<tr><td><hr></td></tr>
+				<tr><td>Sold by {{merchantid}} LLP (4.7 out of 5 | 26,133 ratings) and Fulfilled by Vass Online SHopping</td></tr>
+				<tr><td>{{descrip}}</td></tr>
+				<tr><br></tr>
+				<tr><br></tr>
+				<tr><br></tr></table><br/><br/>
+			
+				
+				<button class="buttonCls" ng-click="sampleFunc()" >add to cart</button>
+			
+				<button  class="buttonCls" ng-click="sampleFunc1()">Buy Now</button>
+				<button  align="center" class="buttonCls" on-click="afterlogin.html">
+					<a href="afterlogin.html">Back to Home Page</a></button>
+			</div>
+			</div>
+		</div>
+	</body>
+	</html>

@@ -1,0 +1,163 @@
+	
+<html>
+	<head>
+		<style type="text/css">
+		.divClass{
+		float:left;
+	    width: 25%;
+	    padding:75px;
+	}
+	.tableCls {
+	    border: 1px solid black; 
+	}
+	.buttonCls{
+		text-decoration: none;
+		background-color: green;
+		width:120px;
+		height: 30px;
+	}
+	.divTable{
+		text-align: right;
+	}
+		</style>
+		<script>
+	function bigImg(x) {
+	    x.style.height = "400px";
+	    x.style.width = "500px";
+	}
+
+	function normalImg(x) {
+	    x.style.height = "400px";
+	    x.style.width = "400px";
+	}
+	</script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.2/angular.min.js"></script>
+			<script type="text/javascript">
+
+		
+	var app=angular.module('angularApp1',[]);
+	app.controller('angularcntrl1',function($scope,$filter,$log,$http){
+			$scope.merchatid1='';
+			$scope.productid1='';
+			$scope.userid4='';
+			$scope.productname='';
+			$scope.descrip='';
+			$scope.imge='';
+			$scope.merchantname='';
+var urlParams = new URLSearchParams(window.location.search);
+$scope.product_id = urlParams.get('product_id');
+console.log($scope.product_id);
+
+
+
+
+			 var static=0;
+			 $scope.userid4="user2";
+			$http.get('http://10.177.2.81:8080/product/get/'+$scope.product_id)
+			.then(function(response){
+			$scope.user=response.data;
+			$scope.descrip=response.data.description;
+			$log.info(response.data.description);
+			$scope.productid=response.data.productId;
+			$scope.productname=response.data.name;
+			$scope.imge=response.data.imagepath;
+			$scope.merchantid1=response.data.merchantEntityList[0].merchantId;
+			$scope.merchantname=response.data.merchantEntityList[0].merchantName;
+		console.log($scope.merchantname);
+		console.log($scope.productname);
+			
+			$scope.email=localStorage.getItem("userId");
+			//$scope.merchantid1,
+			$scope.sampleFunc=function(MerchantName,Productname,Quantity){
+	            var data = {
+	              cartid : "cart1",
+	              productid : $scope.productid,
+	              merchantid :$scope.merchantselected,
+	              userid: $scope.email,
+	              quantity : Quantity
+	            }
+	            $http.post('http://localhost:8083/cart/addtocart/', data, {header: {Accept: "Application:json ; charset=utf-8"}}).then(function(response){
+	            	$log.info(response.data);
+	              if(response.data) {
+				   
+					alert("Added to cart successfully");
+	              
+	              }
+	              else {
+	                alert("Try Again!!!");
+	                window.location="productdesc.html";
+	              }
+	            });
+	         }
+	         });
+
+	$http.get('http://10.177.2.81:8080/product/getmerchantwrapperlist/'+$scope.product_id)
+	.then(function(response){
+	$scope.merchant=response.data;
+	$log.info($scope.merchant);
+	$log.info("reached");
+	
+	});
+
+			static++;
+	      $scope.sampleFunc1=function(){
+			$http.get('http://localhost:8080/order/sendemail/vishalbabar.4041@gmail.com/subject/message')
+			.then(function(response){
+							 alert("Added to Cart successfully!!!");
+
+		});
+		}
+		$scope.merchantname2="";
+        $scope.hello=function(merchantselected){
+          $scope.merchantname2=merchantselected;
+        }
+	});
+			</script>
+	</head>
+	<body>
+		<div>
+			<!-- <div class="divClass"><img onmouseover="bigImg(this)" onmouseout="normalImg(this)" src="{{imagepath1}}" alt="image is loading.. wait"/></div> -->
+			<div class="divClass" ng-app="angularApp1" ng-controller="angularcntrl1" >
+				<img onmouseover="bigImg(this)" onmouseout="normalImg(this)" src="{{imge}}" alt="image is loading.. wait"/>
+				<table>
+					<tr ng-model="productname"><th>{{productname}}</th></tr>
+					<tr><td><hr></td></tr>
+					<tr ><td>Sold by {{merchantname}} LLP (4.7 out of 5 | 26,133 ratings) and Fulfilled by Vass Online SHopping</td></tr>
+					<tr ng-model="merchantname"><td>{{merchantid1}} </td></tr>
+					<tr><td>{{descrip}}</td></tr>
+					<tr><br></tr>
+					<tr><br></tr>
+					<tr><br></tr></table><br/><br/>
+				
+					<div class="divTable" id="App1"   >
+						<!-- <div ><table class="tableCls"> <tr class="tableCls" ng-repeat="x in merchant" ><td>{{x.merchantName}}</td><td>{{x.price}}</td><td>{{x.location}}</td><td>{{x.review}}</td></tr> -->
+
+<div ><table class="tableCls"> <tr class="tableCls" ng-repeat="x in merchant" ><td>{{x.merchantName}}</td><td>{{x.price}}</td><td>{{x.location}}</td><td>{{x.review}}</td></tr>
+
+</div>
+		</div>
+
+
+					</table><br>
+					<div><select name="merchantList" ng-model="merchantselected" ng-change="hello(merchantselected)">
+                        <option value="{{x.merchantId}}" ng-repeat="x in merchant">{{x.merchantName}}</option>
+					</select></div><br><br>
+					<div ng-model="merchantName41">
+					Quantity:<input type="number" min=0 ng-model="x.quantity"/>
+
+					<button class="buttonCls" ng-click="sampleFunc(merchantname,productname,x.quantity)">Add to Cart</button></div>
+					<!-- <button  class="buttonCls" ng-click="sampleFunc1()">Buy Now</button> -->
+					<button  align="center" class="buttonCls" on-click="afterlogin.html">
+						<a href="frame1.html">Back to Home Page</a></button>
+					</div>
+					</div>
+				</div>
+			</div>
+
+			</div>
+			</div>
+
+		</body>
+		</html>
+
+		<!-- cartpractice.html?product_id={{product_id}}&merchant_id={{merchantid1}} -->

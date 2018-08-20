@@ -1,0 +1,86 @@
+<html>
+	<head>
+            <link rel="shortcut icon" href="vassicon.ico" />
+            <title>Vass</title>
+        <link rel = "stylesheet" href = "history.css">
+        <style>
+            .divcls{
+   background-color:#96C5C7;}
+        </style>
+		<script src = "https://ajax.googleapis.com/ajax/libs/angularjs/1.7.2/angular.min.js">
+    	</script>
+		<script>
+
+          var app=angular.module("profileapp",[]);
+	            app.controller('profilecontroller',function($scope,$http,$log,$rootScope){
+	            $http.get("http://10.177.2.144:8086/order/allorderitems/").then(function(response){
+	                $scope.history = response.data;
+	                $rootScope.product = resopnse.data.
+	                $log.info(response.data);
+	      		});
+
+                  $scope.SampleFunc=function(){
+                  window.location='afterlog.html?search_term={{searchterm}}'
+	        //     $scope.getproductname = function(productid){
+		      	// 	$http.get("http://10.177.2.81:8080/product/getproductname/"+productid).then(function(response){
+		       //          $scope.product = response.data;
+		      	// 	});
+	      		// }
+                  }
+                });
+
+              
+
+	     
+	      // var product = angular.module("merchantApp",[]);
+	      // app.controller("merchantController",function($scope,$http) {
+	      // 		$http.get("http://10.177.2.81:8080/product/getmerchantname/"+$scope.history[0].productId+"/"+$scope.history[0].merchantId).then(function(response){
+	      //           $scope.merchant = response.data;
+	      // 		});
+	      // });
+
+	       app.config(['$qProvider', function ($qProvider) {
+          $qProvider.errorOnUnhandledRejections(false);
+        }]);
+		</script>
+	</head>
+		<body align = "center">
+                <div class="divcls"><br>
+                    <div>
+                    <div align="center" display="flex">
+                    <select height="25" class="menu" name="attributes" ng-model="selectedtype" ng-change="selectingOption(selectedtype)">
+                      <option value="Phone">phones</option>
+                      <option value="book">books</option>
+                      <option value="shoes">shoes</option>
+                    </select>
+                    <input class="SearchBar" text-align="center" type="text" placeholder="search.." size="100" ng-model="searchterm"/>
+                    <button ><a href="afterlog.html?search_term=searchterm">search</a></button>
+                  </div>
+			<br>
+			 <div class = "heading">
+			  <h1>History</h1>
+			</div>
+			  <form ng-app = "profileapp" ng-controller = "profilecontroller" name = "profileform" align = "center">
+			    <div name = "profilediv" class="container">
+			         <br><br>
+			          <table  width="100%" height = "40px">
+			          <div ><th>Product Name</th></div>
+			          <div ><th>Merchant Name</th></div>
+			          <div ><th>Quantity</th></div>
+			          <div><th>Price</th></div>
+			          <div ><th>Date</th></div>
+			          <br><br><br>
+			          <tr align="center" ng-repeat="detail in history">
+			            <td>{{detail.productid}}</td>
+			            <td>{{detail.merchantid}}</td>
+			            <td>{{detail.quantity}}</td>
+			            <td>{{detail.orderprice}}</td>
+			            <td>{{detail.date}}</td>
+			            <br>
+			          </tr>
+			        </table>
+			       <button onclick = "window.location = 'afterlog.html' ">Home</button><br><br>
+			    </div>
+			</form>		  
+		</body>		
+</html>

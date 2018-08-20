@@ -1,0 +1,218 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <link rel = "stylesheet" href = "login.css">
+    <script src = "https://ajax.googleapis.com/ajax/libs/angularjs/1.7.2/angular.min.js">
+    </script>
+    <script>
+
+
+
+ var app = angular.module('signupapp',[]);
+          app.controller('signupcontroller', function($scope, $http){
+
+	var urlParams = new URLSearchParams(window.location.search);
+	$scope.productid = urlParams.get('product_name');
+	var merch_id = urlParams.get('merchant_name');
+	var quantity = urlParams.get('Quantity');
+	var price = urlParams.get('Price');
+	var mer_name = urlParams.get('merchant_name');
+	var pro_name = urlParams.get('product_name')
+	console.log($scope.productid);
+	console.log(merch_id);
+	console.log(quantity);
+	var data = {
+		"userEmailid" : localStorage.getItem("email"),
+		"streetName" : $scope.addressLine1,
+		"city":$scope.city,
+		"pincode" : $scope.pincode,
+	};
+		$scope.submit = function(){
+			if(localStorage.getItem("email")!=null){
+				var data = {
+					"userEmailid" : localStorage.getItem("email"),
+					"streetName" : $scope.addressLine1,
+		"city":$scope.city,
+		"pincode" : $scope.pincode,
+				};
+				if(quantity==null)
+				{
+					console.log('sdkbfkjs');
+					$http.post('http://10.177.2.45:8085/order/addallorder',data).then(function(response){
+						alert('Order placed successfully');
+						window.location="/index1.html";
+					});
+				}
+				else{
+					$http.post('http://10.177.2.45:8085/order/addorderbycart/?productname='+pro_name+'&merchant='+mer_name+'&quantity='+quantity+'&price='+price,data).then(function(response){
+						alert('Order placed successfully');
+						window.location="/index1.html";
+				});
+				}
+			}		
+			else if(localStorage.getItem("email")!=null){
+				var data = {
+					"userEmailid" : localStorage.getItem("email"),
+		"streetName" : $scope.addressLine1,
+		"city":$scope.city,
+		"pincode" : $scope.pincode,
+				};
+				if(quantity==null)
+				{
+					$http.post('http://10.177.2.45:8085/order/addallorder',data).then(function(response){
+						alert('Order placed successfully');
+						window.location="/index1.html";
+					});
+				}
+				else{
+					$http.post('http://10.177.2.45:8085/order/addorderbycart/?productname='+pro_name+'&merchant='+mer_name+'&quantity='+quantity+'&price='+price,data).then(function(response){
+						alert('Order placed successfully');
+						window.location="/index1.html";
+				});
+				}	
+			}
+			else{
+				alert("User not found...Register..");
+				window.location="/signup.html";
+			}
+		}
+
+	$scope.signupform = function(){
+		window.location="/signup.html";
+	}
+	$scope.login = function(){
+		window.location="/login.html";
+	}
+	$scope.profile = function(){
+		window.location="/profile.html";
+	}
+	$scope.history = function(){
+		window.location="/history.html";
+	}
+	$scope.catemob = "Mobiles";
+	$scope.catemens = "Mens";
+	$scope.Category1 = function(){
+		$log.info($scope.catemob);
+		window.location="/Productpagecat.html?cate="+$scope.catemob;
+	}
+	$scope.Category2 = function(){
+		$log.info($scope.catemob);
+		window.location="/Productpagecat.html?cate="+$scope.catemens;
+	}
+	$scope.logout = function(){
+		if(localStorage.getItem("emailid")!=null||localStorage.getItem("signupemail")!=null)
+		{
+			localStorage.clear();
+			alert("logout successfull");
+			window.location="/index1.html";
+		}
+		else{
+			alert("User not found...Register..");
+			window.location="/signup.html";
+		}
+	}
+	$scope.cart = function(){
+    window.location="/addtocart.html";
+  }
+	var searchdata = $scope.search1;
+	$log.info($scope.search1);
+
+	$scope.search = function(){
+		window.location='/searchresultpage.html?pro='+$scope.search1;
+	}
+
+
+
+
+
+
+
+
+         
+            $scope.sendData = function(){
+            var data = {
+              addressLine1 : $scope.addressLine1,
+              addressLine2 : $scope.addressLine2,
+              city : $scope.city,
+              state : $scope.state,
+              pinCode : $scope.pinCode,
+              userId : sessionStorage.getItem("userId")
+            }
+            $http.post('http://10.177.2.37:8080/user/addaddress', data, {header: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function(response){
+              if(response.data) {
+                alert("Added address successfully!!!");
+                window.location="profile.html";
+              }
+              else {
+                alert("Address exists!!!");
+                window.location="profile.html";
+              }
+            });
+          }
+
+            $scope.sendData1 = function(address,address1,City1,State1,PinCode1){
+            var data = {
+              addressLine1 : address,
+              addressLine2 : address1,
+              city : City1,
+              state : State1,
+              pinCode : PinCode1,
+              userId : sessionStorage.getItem("userId")
+            }
+
+
+$http.get('http://localhost:8086/order/sendemail/' + $scope.email + '/subject/'+data)
+							.then(function (response) {
+								alert("sent mail successfully!!!");
+
+							});
+
+            // $http.post('http://10.177.2.37:8080/user/addaddress', data, {header: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function(response){
+            //   if(response.data) {
+            //     alert("Added address successfully!!!");
+            //     window.location="profile.html";
+            //   }
+            //   else {
+            //     alert("Address exists!!!");
+            //     window.location="profile.html";
+            //   }
+            // });
+          }
+        
+        app.config(['$qProvider', function ($qProvider) {
+          $qProvider.errorOnUnhandledRejections(false);
+        }]);
+
+        });
+    </script>
+</head>
+
+<body align = "center">
+
+<h2>Add Address</h2>
+
+<form ng-app = "signupapp" ng-controller = "signupcontroller" name = "signupform" align = "center">
+
+  <div name = "signupdiv "class="container">
+
+        <label><b>First Line</b></label> <br>
+        <input type="text" placeholder="Enter Address Line 1" ng-model="addressLine1" required> <br>
+        <span "signinform.signindiv.$invalid"></span>
+
+
+        <label><b>City</b></label><br>
+        <input type="text" placeholder="Enter City" ng-model="city" required><br>
+        <span "signinform.signindiv.$invalid"></span>
+
+      
+        <label><b>Pincode</b></label><br>
+        <input type="number" placeholder="Enter Pincode" ng-model="pinCode" required><br><br>
+        <span "signinform.signindiv.$invalid"></span>
+        <button type="submit" ng-click = sendData()>Add</button>
+        <button type="submit" ng-click = sendData1(addressLine1,addressLine2,city,state,pinCode)>Add1</button>
+        <button type="submit" ng-click = submit()>Add2</button> submit
+  </div>
+
+</body>
+
+</html>

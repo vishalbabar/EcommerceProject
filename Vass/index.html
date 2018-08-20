@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <link rel="shortcut icon" href="vassicon.ico" />
+      <title>Vass</title>
+      <link rel="stylesheet" type="text/css" href="homecss.css">    
+    <style type="text/css">
+    .divcls{
+   background-color:#96C5C7;}
+button {
+       background-color: #3E7876;
+       color: white;
+       margin: 8px;
+       border: 2px;
+       cursor: pointer;
+       width: 100px;
+       height : 30px;
+   }
+
+   button:hover {
+       opacity: 0.9;
+   }
+.SearchBar {
+                top: 355px;
+                left: 575px;
+                height:30px;
+                width: 500px;
+            }
+            
+.imgCls
+{
+	display: flex;
+}
+.divClass{
+	float:left;
+    padding:5px;
+}
+.menu{
+    height:35px;
+    width: 50px;
+}
+.divCls1
+{    
+	display: flex;
+}
+.cart3{
+    margin: auto;
+    margin-bottom:6px;
+    width: 40%;
+    border: 3px solid #73AD21;
+    padding: 10px;
+}
+      </style>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.2/angular.min.js"></script>
+  <script type="text/javascript">
+var app=angular.module('angularApp1',[]);
+app.controller('angularcntrl1',function($scope,$filter,$log,$http){
+    var urlParams = new URLSearchParams(window.location.search);
+   $scope.searchterm = urlParams.get('searchterm');
+    $scope.buttonName="";
+ if(sessionStorage.getItem("userId")!==null){
+     $scope.buttonName="LOG OUT";
+   }
+   else{
+     $scope.buttonName="LOG IN";
+   }
+ $log.info(sessionStorage.getItem("userId"));
+ $scope.buttonClick=function(){
+   if($scope.buttonName=="LOG IN"){
+     window.location="login.html";
+   }
+   else if($scope.buttonName=="LOG OUT")
+   {
+     sessionStorage.clear();
+     window.location="index.html";
+   }
+ }
+ $scope.SampleFunc=function(searchterm,selecteditem){
+  if(selecteditem=="")
+  {
+ $http.get('http://10.177.2.81:8083/getproductbyname/'+searchterm).then(function(response){
+   $scope.product1 = response.data;
+ });
+  }
+  else{
+$http.get('http://10.177.2.81:8083/searchPnameDescAndType/'+searchterm+'/'+selecteditem).then(function(response){
+   $scope.product1 = response.data;
+});
+}
+}
+$scope.selectingOption=function(selecteditem){
+  $http.get('http://10.177.2.81:8083/getproductbytype/'+selecteditem).then(function(response){
+    $scope.product1 = response.data;
+    console.log(response);
+});
+}
+$http.get('http://10.177.2.81:8083/getproductbytype/phone').then(function(response){
+          $scope.product1=response.data;
+          console.log(response);
+});
+});
+</script>
+</head>
+<body text-align="center">
+    <div ng-app="angularApp1" ng-controller="angularcntrl1" >
+        <!-- <div class="divcls"><br>
+          <div>
+          <div align="center" display="flex">
+          <select height="25" class="menu" name="attributes" ng-model="selectedtype" ng-change="selectingOption(selectedtype)">
+            <option value="" selected>Select Product</option>
+            <option value="Phone">phones</option>
+            <option value="book">books</option>
+            <option value="shoes">shoes</option>
+          </select>
+          <input class="SearchBar" text-align="center" type="text" placeholder="search.." size="100" ng-model="searchterm"/>
+          <button ng-click="SampleFunc(searchterm)">search</button>
+        </div>
+        <div align="right"><br>
+          <button onclick="location.href = 'login.html';">Login</button><button>Cart</button>
+        </div>
+        </div>
+        <hr>
+        </div> -->
+        <div class="divcls"><br>
+
+
+            <div align="center" display="flex">
+                <img src="logo2.png" alt="image loading..wait" height="100" width="180" on-click="window.location='index.html'"/>
+            <select height="25" class="menu" name="attributes" ng-model="selectedtype" ng-change="selectingOption(selectedtype)">
+              <option value="" selected>Select Type</option>
+              <option value="phone">phones</option>
+              <option value="book">books</option>
+              <option value="shoes">shoes</option>
+            </select>
+            <input class="SearchBar" text-align="center" type="text" placeholder="search.." size="100" ng-model="searchterm"/>
+            <button ng-click="SampleFunc(searchterm,selectedtype)">search</button>
+          </div>
+          <div align="right"><br>
+            <button onclick="window.location='cartpractice.html'">Cart</button><button onclick="window.location='profile.html'">Profile</button><button onclick="window.location='history1.html'">My Orders</button><button ng-click="buttonClick()">{{buttonName}}</button>
+                  </div>
+          </div>
+    	<div class="cart3" ng-repeat="x in product1">
+          <div ><a href="productdescc.html" target="_self"><img  class="class31" src="{{x.imagepath}}" alt="image not found" width="280" height="300"></a></div>
+              <div class="class34">
+                  <table  align="center">
+          <tr><td class="class32"align="center"><a href="productdescc.html?product_id={{x.id}}" target="_self">{{x.productName}}</a></td></tr>
+          <tr><td class="class32"align="center">{{x.description}}</td></tr>         
+      <tr><td>price:{{x.price}}/-</td></tr>
+              </table>
+              </div>
+              <div  class="cart3" ng-if="x==null">
+                    <tr><td>no search results</td></tr>
+                                </div>
+            </div>
+  </div>
+  </body>
+  </html>

@@ -1,0 +1,149 @@
+<html>
+	<head>
+		<link rel = "stylesheet" href = "history.css">
+		<style>
+			.divcls{
+				background-color:#96C5C7;}
+				.SearchBar {
+                top: 355px;
+                left: 575px;
+                height:30px;
+                width: 500px;
+            }
+		</style>
+		<script src = "https://ajax.googleapis.com/ajax/libs/angularjs/1.7.2/angular.min.js">
+    	</script>
+		<script>
+          var app=angular.module("profileapp",[]);
+	            app.controller('profilecontroller',function($scope,$http,$log,$rootScope){
+					$scope.sampleFunction=function(searchterm1){
+                       window.location='index.html?searchterm='+searchterm1;
+                   }
+					$scope.buttonName="";
+ if(sessionStorage.getItem("userId")!==null){
+     $scope.buttonName="LOG OUT";
+   }
+   else{
+     $scope.buttonName="LOG IN";
+   }
+ $log.info(sessionStorage.getItem("userId"));
+ $scope.buttonClick=function(){
+   if($scope.buttonName=="LOG IN"){
+     window.location="login.html";
+   }
+   else if($scope.buttonName=="LOG OUT")
+   {
+     sessionStorage.clear();
+     window.location="search.html";
+   }
+ }
+					if(sessionStorage.getItem("userId")!==null){
+				$scope.dateConversion = function(timeStamp){
+					let d = new Date();
+					return d.toLocaleDateString();
+				}
+
+					$scope.productid='';
+$scope.merchantid='';
+	            $http.get("http://localhost:8086/order/allorderitems/").then(function(response){
+	                // $scope.history = response.data;
+	                // $rootScope.product = response.data.
+					// $log.info(response.data);
+					$scope.history=response.data;
+					$log.info(response.data);
+					$scope.getMechantAndProductInfoByHittingAPI();
+	      		});
+	$scope.getMechantAndProductInfoByHittingAPI = function(){
+		$scope.history.forEach(function(item, index){
+			$scope.getProdMerchNames(item.productid, item.merchantid, index);
+		});
+	}
+	$scope.getProdMerchNames = function(productid, merchantid, index){
+		if(productid && merchantid){
+			$http.get('http://10.177.2.81:8080/product/getproductmerchantnames/'+productid+'/'+merchantid).then(function(response){
+					$scope.history[index].productName = response.data.productName;
+					$scope.history[index].merchantName = response.data.merchantName;
+					console.log($scope.prodAndMerchantNames);
+			});
+		}
+		
+	}				  
+
+}
+
+
+	        //     $scope.getproductname = function(productid){
+		      	// 	$http.get("http://10.177.2.81:8080/product/getproductname/"+productid).then(function(response){
+		       //          $scope.product = response.data;
+		      	// 	});
+	      		// }
+	      	});
+
+	      // var product = angular.module("merchantApp",[]);
+	      // app.controller("merchantController",function($scope,$http) {
+	      // 		$http.get("http://10.177.2.81:8080/product/getmerchantname/"+$scope.history[0].productId+"/"+$scope.history[0].merchantId).then(function(response){
+	      //           $scope.merchant = response.data;
+	      // 		});
+	      // });
+
+	       app.config(['$qProvider', function ($qProvider) {
+          $qProvider.errorOnUnhandledRejections(false);
+        }]);
+		</script>
+	</head>
+		<body align = "center">
+			  <div ng-app = "profileapp" ng-controller = "profilecontroller" name = "profileform" align = "center">
+					<div class="divcls"><br>
+						<div align="center" display="flex">
+							<img src="logo2.png" alt="image loading..wait" height="100" width="180"/>
+						<select height="25" class="menu" name="attributes" ng-model="selectedtype" ng-change="selectingOption(selectedtype)">
+						  <option value="" selected>Select Type</option>
+						  <option value="Phone">phones</option>
+						  <option value="book">books</option>
+						  <option value="shoes">shoes</option>
+						</select>
+						<input class="SearchBar" text-align="center" type="text" placeholder="search.." size="100" ng-model="searchterm"/>
+						<button ng-click="sampleFunction(searchterm)">search</button>
+					  </div>
+					  <div align="right"><br>
+						<button onclick="window.location='cartpractice.html'">Cart</button>
+						<button onclick="window.location='profile.html'">Profile</button>
+						<button onclick="window.location='history.html'">My Orders</button>
+						<button onclick="location.href='index.html'">Home</button>
+						<button ng-click="buttonClick()">{{buttonName}}</button>
+							  </div>
+					  </div>
+			 <div class = "heading">
+			  <h1>History</h1>
+			</div>
+			    <div name = "profilediv" class="container">
+			         
+			         <br><br>
+			          <table  width="100%" height = "40px">
+			          <div ><th>Product Name</th></div>
+			          <div ><th>Merchant Name</th></div>
+			          <div ><th>Quantity</th></div>
+			          <div><th>Price</th></div>
+			          <div ><th>Date</th></div>
+			          <br><br><br>
+			          <tr align="center" ng-repeat="detail in history">
+			            <td>{{detail.productName}}</td>
+			            <td>{{detail.merchantName}}</td>
+			            <td>{{detail.quantity}}</td>
+			            <td>{{detail.orderprice*detail.quantity}}</td>
+			            <td>{{detail.dateofpurchase && dateConversion(detail.dateofpurchase)}}</td>
+			            <br>
+			          </tr>
+			        </table>
+			       <button onclick = "window.location = 'index.html' ">Home</button><br><br>
+			    </div>
+			</div>
+			  
+
+
+			
+		</body>
+		
+</html>
+
+

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <link rel="shortcut icon" href="vassicon.ico" />
+        <style>
+            .divcls{
+              background-color:#96C5C7;}
+              .SearchBar {
+                      top: 355px;
+                      left: 575px;
+                      height:30px;
+                      width: 500px;
+                  }
+          </style>
+        <title>Vass</title>
+    <link rel = "stylesheet" href = "history.css">
+    <script src = "https://ajax.googleapis.com/ajax/libs/angularjs/1.7.2/angular.min.js">
+    </script>
+
+    <script>
+          var app=angular.module("profileapp",[]);
+              app.controller('profilecontroller',function($scope,$http,$window,$log){
+                $scope.sampleFunction=function(searchterm1){
+                       window.location='index.html?searchterm='+searchterm1;
+                   }
+                $scope.buttonName="";
+ if(sessionStorage.getItem("userId")!==null){
+     $scope.buttonName="LOG OUT";
+   }
+   else{
+     $scope.buttonName="LOG IN";
+   }
+ $log.info(sessionStorage.getItem("userId"));
+ $scope.buttonClick=function(){
+   if($scope.buttonName=="LOG IN"){
+     window.location="login.html";
+   }
+   else if($scope.buttonName=="LOG OUT")
+   {
+     sessionStorage.clear();
+     window.location="search.html";
+   }
+ }
+              $http.get("http://10.177.2.37:8080/user/getprofile/"+sessionStorage.getItem("userId")).then(function(response){
+                $scope.user = response.data;
+              $http.get("http://10.177.2.37:8080/user/getalladdress/"+sessionStorage.getItem("userId")).then(function(response){
+              $log.info("working");
+              $scope.user1 = response.data;
+              $log.info($scope.user1);
+            })
+          });
+        }); 
+</script>
+</head>
+
+
+<body align = "center">
+  
+  <div ng-app = "profileapp" ng-controller = "profilecontroller" name = "profileform" align = "center">
+      <div class="divcls"><br>
+        <div align="center" display="flex">
+          <img src="logo2.png" alt="image loading..wait" height="100" width="180"/>
+        <select height="25" class="menu" name="attributes" ng-model="selectedtype" ng-change="selectingOption(selectedtype)">
+          <option value="" selected>Select Type</option>
+          <option value="Phone">phones</option>
+          <option value="book">books</option>
+          <option value="shoes">shoes</option>
+        </select>
+        <input class="SearchBar" text-align="center" type="text" placeholder="search.." size="100" ng-model="searchterm"/>
+        <button ng-click="sampleFunction(searchterm)">search</button>
+        </div>
+        <div align="right"><br>
+        <button onclick="window.location='cartpractice.html'">Cart</button>
+        <button onclick="window.location='profile.html'">Profile</button>
+        <button onclick="window.location='history1.html'">My Orders</button>
+        <button onclick="location.href='index.html'">Home</button>
+        <button ng-click="buttonClick()">{{buttonName}}</button>
+            </div>
+        </div>
+      <div class = "heading">Profile</div>
+    <div name = "profilediv" class="container">
+      <br><br>
+          <label><b>First Name</b></label> 
+          <p>{{user.firstName}}</p> <br>
+
+          <label><b>Last Name</b></label>
+          <p>{{user.lastName}}</p><br>
+         
+          <label><b>E-mail Id</b></label>
+          <p>{{user.emailId}}</p><br>
+
+          <label><b>Phone Number</b></label>
+          <p>{{user.phoneNumber}}</p><br>
+          
+          <button type="submit" onclick = "window.location = 'editprofile.html' ">Edit profile</button>
+
+          <button onclick = "window.location = 'afterlog.html' ">Home</button><br><br>
+
+          <table  width="100%" >
+          <div><th>Line 1</th></div>
+          <div><th>Line 2</th></div>
+          <div><th>City</th></div>
+          <div><th>State</th></div>
+          <div><th>Pin Code</th></div>
+          <tr align="center" ng-repeat="addresses in user1">
+            <td>{{addresses.addressLine1}}</td>
+            <td>{{addresses.addressLine2}}</td>
+            <td>{{addresses.city}}</td>
+            <td>{{addresses.state}}</td>
+            <td>{{addresses.pinCode}}</td>
+          </tr>
+        </table>
+         <button type= "submit" onclick = "window.location = 'address.html'">Add Address</button>
+    </div>
+  </div>
+  
+</body>
+
+</html>

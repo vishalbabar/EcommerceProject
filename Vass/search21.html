@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <link rel="shortcut icon" href="vassicon.ico" />
+      <title>Vass</title>
+      <link rel="stylesheet" type="text/css" href="homecss.css">    
+    <style type="text/css">
+      .divClass{
+      float:left;
+        width: 25%;
+        padding:75px;
+    }
+    .tableCls {
+        border: 1px solid black; 
+    }
+    .buttonCls{
+      text-decoration: none;
+      background-color: green;
+      width:120px;
+      height: 30px;
+    }
+    .divTable{
+      text-align: right;
+    }
+      </style>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.2/angular.min.js"></script>
+  <script type="text/javascript">
+var app=angular.module('angularApp1',[]);
+app.controller('angularcntrl1',function($scope,$filter,$log,$http){
+$scope.SampleFunc=function(searchterm){
+$http.get('http://10.177.2.81:8083/getproductbyname/'+searchterm).then(function(response){
+    $scope.product1 = response.data;
+    console.log(response);
+});
+}
+$scope.selectingOption=function(selecteditem){
+  $http.get('http://10.177.2.81:8083/getproductbytype/'+selecteditem).then(function(response){
+    $scope.product1 = response.data;
+    console.log(response);
+});
+}
+});
+</script>
+</head>
+<body>
+    <div class="divClass" ng-app="angularApp1" ng-controller="angularcntrl1" >
+ <div class="divcls" align="center"><br>
+    <div>
+    <select height="25" class="menu" name="attributes" ng-model="selectedtype" ng-change="selectingOption(selectedtype)">
+      <option value="phone">phones</option>
+      <option value="book">books</option>
+      <option value="shoes">shoes</option>
+    </select>   
+    <!-- <div ng-model="selecteditem">{{selectedtype}}</div> -->
+    <input class="SearchBar" text-align="center" type="text" placeholder="search.." size="100" ng-model="searchterm"/>
+    <button ng-click="SampleFunc(searchterm)">search</button>
+  </div>
+    <div align="right">
+      <button onclick="window.location('login.html');">Login</button>
+      <button onclick="window.location('cartpractice.html');">cart</button>
+    </div>
+  </div>
+  <div>
+    	<div class="cart3" ng-repeat="x in product1">
+          <div ><img  class="class31" src="{{x.imagepath}}" alt="image not found" width="280" height="300" onclick="window.open('productdescription.html')"></div>
+              <div class="class34">
+                  <table  align="center">
+          <tr><td class="class32"align="center"><a href="productdesc.html?product_id={{x.id}}" target="bottom">{{x.productName}}</a></td></tr>
+          <tr><td class="class32"align="center">{{x.description}}</td></tr>         
+      <tr><td>{{x.price}}</td></tr>
+              </table>
+              </div>
+            </div>
+
+     
+    </div>
+  </div>
+  </body>
+  </html>

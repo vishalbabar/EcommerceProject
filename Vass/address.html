@@ -1,0 +1,130 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <link rel = "stylesheet" href = "login.css">
+    <script src = "https://ajax.googleapis.com/ajax/libs/angularjs/1.7.2/angular.min.js">
+    </script>
+    <script>
+          var app = angular.module('signupapp',[]);
+          app.controller('signupcontroller', function($scope, $http){
+            $scope.sendData = function(){
+            var data = {
+              addressLine1 : $scope.addressLine1,
+              addressLine2 : $scope.addressLine2,
+              city : $scope.city,
+              state : $scope.state,
+              pinCode : $scope.pinCode,
+              userId : sessionStorage.getItem("userId")
+            }
+          }
+
+
+
+            var urlParams = new URLSearchParams(window.location.search);
+  //$scope.product_id = urlParams.get('product_id');
+  $scope.product_name = urlParams.get('product_name');
+  $scope.merchant_name = urlParams.get('merchant_name');
+  $scope.Price = urlParams.get('Price');
+  $scope.Quantity = urlParams.get('Quantity');
+  $scope.cart_id = urlParams.get('cart_id');
+	//console.log($scope.product_id);
+  
+  
+          //   $http.post('http://10.177.2.37:8080/user/addaddress', data, {header: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function(response){
+          //     if(response.data) {
+          //       alert("Added address successfully!!!");
+          //       window.location="profile.html";
+          //     }
+          //     else {
+          //       alert("Address exists!!!");
+          //       window.location="profile.html";
+          //     }
+          //   });
+          // }
+
+            $scope.sendData1 = function(address,City1,PinCode1){
+            var data = {
+              addressLine1 : address,
+             
+              city : City1,
+             
+              pinCode : PinCode1,
+              userId : sessionStorage.getItem("userId")
+            }
+
+
+if((address==null)&&(City1==null)&&(PinCode1==null)){
+  alert("should not be null");
+  }
+
+else
+{
+
+// /sendemailprd/{toEmail}/{subject}/{message}/{ProductName}/{MerchantName}/{address}/{city}/{pincode}
+
+
+$http.get('http://localhost:8086/order/sendemailprd/' + $scope.email + '/subject/'+product_name+'/'+ merchant_name+'/'+addressLine1 +'/'+city+'/'+ pinCode)
+							.then(function (response) {
+								alert("sent mail successfully!!!");
+
+              });
+              
+
+              $http.get('http://localhost:8083/cart/removefromcart/' + cart_id)
+							.then(function (response) {
+
+								$log.info("deleted");
+								alert("Deleted from Cart successfully!!!");
+							});
+
+
+            // $http.post('http://10.177.2.37:8080/user/addaddress', data, {header: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function(response){
+            //   if(response.data) {
+            //     alert("Added address successfully!!!");
+            //     window.location="profile.html";
+            //   }
+            //   else {
+            //     alert("Address exists!!!");
+            //     window.location="profile.html";
+            //   }
+            // });
+          }
+        }
+       
+        app.config(['$qProvider', function ($qProvider) {
+          $qProvider.errorOnUnhandledRejections(false);
+        }]);
+      });
+    </script>
+</head>
+
+<body align = "center">
+
+<h2>Add Address</h2>
+
+<form ng-app = "signupapp" ng-controller = "signupcontroller" name = "signupform" align = "center">
+
+  <div name = "signupdiv "class="container">
+
+        <label><b>First Line</b></label> <br>
+        <input type="text" placeholder="Enter Address Line 1" ng-model="addressLine1" required> <br>
+        <span "signinform.signindiv.$invalid"></span>
+
+        
+        <label><b>City</b></label><br>
+        <input type="text" placeholder="Enter City" ng-model="city" required><br>
+        <span "signinform.signindiv.$invalid"></span>
+
+        
+
+        <label><b>Pincode</b></label><br>
+        <input type="number" placeholder="Enter Pincode" ng-model="pinCode" required><br><br>
+        <span "signinform.signindiv.$invalid"></span>
+        <button type="submit" ng-click = "sendData()">Add</button>
+        <button type="submit" ng-click = "sendData1(addressLine1,city,pinCode)">Add1</button>
+
+  </div>
+
+</body>
+
+</html>

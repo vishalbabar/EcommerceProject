@@ -1,0 +1,496 @@
+<html>
+
+<head>
+	<link rel="stylesheet" href="basic.css">
+
+	<style type="text/css">
+		.cart {
+			background: #3E7876;
+			height: 40px;
+			padding-bottom: 20px;
+		}
+
+		.cart3 {
+			display: flex;
+			flex-direction: row;
+			background-color: orange;
+			height: 70px;
+			width: "40%";
+			padding-right: 30px;
+			margin: 4%;
+
+
+		}
+
+			.divcls{
+				background-color:#96C5C7;
+				position: relative;
+				
+			}
+			.divcls1{
+				background-color:#96C5C7;
+		
+				position: relative;
+				height: 100px;
+				width: 15%;
+			}
+				.SearchBar {
+                top: 355px;
+                left: 575px;
+                height:30px;
+                width: 500px;
+            }
+	</style>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.2/angular.min.js"></script>
+
+	<script type="text/javascript">
+		var app = angular.module('angularApp1', []);
+		app.controller('MainCtrl', function ($scope, $filter, $log, $http) {
+			$scope.sampleFunction=function(searchterm1){
+                       window.location='index.html?searchterm='+searchterm1;
+                   }
+
+			$scope.buttonName="";
+ if(sessionStorage.getItem("userId")!==null){
+     $scope.buttonName="LOG OUT";
+   }
+   else{
+     $scope.buttonName="LOG IN";
+   }
+ $log.info(sessionStorage.getItem("userId"));
+ $scope.buttonClick=function(){
+   if($scope.buttonName=="LOG IN"){
+     window.location="login.html";
+   }
+   else if($scope.buttonName=="LOG OUT")
+   {
+     sessionStorage.clear();
+     window.location="search.html";
+   }
+ }
+
+
+			$scope.user = '';
+			$scope.userid = '';
+			$scope.userid1 = '';
+			$scope.userid2 = '';
+
+			$scope.userid = '';
+			$scope.userid = sessionStorage.getItem("userId");
+			$scope.email = sessionStorage.getItem("email");
+
+
+
+
+			//+'localStorage.getItem("userId")
+			$http.get('http://localhost:8083/cart/usercartitemswithname/' + sessionStorage.getItem("userId"))
+				.then(function (response) {
+					$scope.cart1 = response.data;
+
+					$scope.cartid1 = response.data.cartid;
+
+					console.log($scope.cart1);
+
+
+				});
+
+
+			$http.get('http://localhost:8083/cart/usercartitems/' + sessionStorage.getItem("userId"))
+				.then(function (response) {
+					$scope.cart = response.data;
+				});
+
+			var urlParams = new URLSearchParams(window.location.search);
+			$scope.product_id = urlParams.get('product_id');
+			$scope.merchant_id = urlParams.get('merchant_id');
+			console.log($scope.product_id);
+
+
+			$scope.sampleFunc2 = function (cartId) {
+				$http.get('http://localhost:8083/cart/removefromcart/' + cartId)
+					.then(function (response) {
+
+						$log.info("deleted");
+						
+					});
+					//alert("Added to Cart successfully!!!");
+					window.location='cartpractice.html';
+			}
+
+
+
+
+			$scope.sampleFunc3 = function (cartId, Quantity) {
+				console.log(cartId);
+
+				var data = {
+					cartid: cartId,
+					quantity: Quantity
+				}
+
+				$http.post('http://localhost:8083/cart/updatetocart/' + cartId + '/' + Quantity, { header: { Accept: "Application:json ; charset=utf-8" } }).then(function (response) {
+					$log.info(response.data);
+
+					log.info("updated");
+					
+				});
+				window.location='cartpractice.html';
+			}
+
+
+			$scope.sampleFunc4 = function () {
+
+				$http.get('http://localhost:8083/cart/removeallfromcart/' + sessionStorage.getItem("userId"))
+					.then(function (response) {
+
+						$log.info("deleted");
+						
+					});
+					//alert("removed from cart successfully!!!");
+					window.location='cartpractice.html';
+			}
+
+
+
+
+			$scope.sampleFuncMail1 = function (productId, merchantId, Quantity, userId, Price, cartId,productname,merchantname,address,city,pincode) {
+
+if (sessionStorage.getItem("userId") == null) {
+					alert('not registered');
+				}
+				else{
+
+				// $http.get('http://10.177.2.37:8080/getalladdress/'+sessionStorage.getItem("userId")).then(function(response){
+				// 	console.log(response);	
+				// 	$scope.addresses=response.data;
+				// 	});
+				var data = {
+					// new Date().toLocaleDateString()
+					productid: productId,
+					merchantid: merchantId,
+					userid: $scope.email,
+					quantity: Quantity,
+					addressid: $scope.addresses,
+					dateofpurchase: "2018-08-16",
+					orderprice: Price
+				}
+
+				$http.get('http://10.177.2.81:8080/product/checkForQuantity/' + productId + '/' + merchantId + '/' + Quantity)
+				.then(function (response) {
+					// $log.info(response);
+					$scope.success = response.data.response;
+					console.log(response);
+					console.log(response.data.response);
+
+					if ($scope.success == "success") {
+						console.log("ok");
+
+
+						$http.get('http://10.177.2.81:8080/product/updateQuantity/' + productId + '/' + merchantId + '/' + Quantity)
+						.then(function (response) {
+							// $log.info(response);
+							$scope.success11 = response.data.response;
+							console.log(response);
+							if($scope.success11=="success"){
+
+
+						
+						$http.post('http://localhost:8086/order/addorder/', data, { header: { Accept: "Application:json ; charset=utf-8" } })
+						.then(function (response) {
+							$log.info(response.data);
+
+							// window.location = "productdesc.html";
+
+						});
+
+						$http.get('http://10.177.2.81:8081/merchant/updateMerchantQuantity/' + merchantId + '/' + Quantity)
+						.then(function (response) {
+							$log.info(response);
+
+						});
+						$http.get('http://localhost:8086/order/sendemailprd/' + $scope.email + '/VASS Order/'+'/subject/'+productname+'/'+ merchantname+'/'+Price+'/'+Quantity+'/'+ address +'/'+city+'/'+ pincode)
+							.then(function (response) {
+								alert("sent mail successfully!!!");
+
+              });
+						$http.get('http://localhost:8083/cart/removefromcart/' + cartId)
+							.then(function (response) {
+
+								$log.info("deleted");
+								alert("Deleted from Cart successfully!!!");
+							});
+
+						
+
+							window.location='cartpractice.html';
+							alert("order placed successfully ");
+						}
+						else{
+						alert("not updated");
+					}
+						})
+						.catch(function(error){
+							console.log(error);
+						});
+					}
+				
+					else {
+						alert("Insufficient quantity");
+					}
+
+
+				});
+				
+
+			}
+
+			}
+
+			$scope.sampleFuncMail = function (productId, merchantId, Quantity, userId, Price, cartId) {
+
+
+
+
+				if (sessionStorage.getItem("userId") == null) {
+					alert('not registered');
+				}
+
+				$http.get('http://10.177.2.37:8080/getalladdress/'+sessionStorage.getItem("userId")).then(function(response){
+						
+					$scope.addresses=response.data;
+					});
+				var data = {
+					// new Date().toLocaleDateString()
+					productid: productId,
+					merchantid: merchantId,
+					userid: $scope.email,
+					quantity: Quantity,
+					addressid: $scope.addresses,
+					dateofpurchase: "2018-08-17",
+					orderprice: Price
+				}
+				$http.post('http://localhost:8086/order/addorder/', data, { header: { Accept: "Application:json ; charset=utf-8" } }).then(function (response) {
+					$log.info(response.data);
+					
+
+					// window.location = "productdesc.html";
+
+				});
+
+
+
+				$http.get('http://10.177.2.81:8080/product/updateQuantity/' + productId + '/' + merchantId + '/' + Quantity).then(function (response) {
+					$log.info(response);
+
+				});
+				$http.get('http://10.177.2.81:8081/merchant/updateMerchantQuantity/' + merchantId + '/' + Quantity).then(function (response) {
+					$log.info(response);
+
+				});
+
+
+				// $http.get('http://localhost:8086/order/sendemail/' + sessionStorage.getItem("email") + '/subject/thanksforordering')
+				// 	.then(function (response) {
+				// 		alert("sent mail successfully!!!");
+
+				// 	});
+
+				// $http.get('http://localhost:8083/cart/removefromcart/' + cartId)
+				// 	.then(function (response) {
+
+				// 		$log.info("deleted");
+				// 		alert("Deleted from Cart successfully!!!");
+				// 	});
+
+
+
+			}
+
+			$scope.BuyAll = function () {
+
+
+				if (sessionStorage.getItem("userId") == null) {
+					alert('not registered');
+				}
+
+				 
+				$http.get('http://localhost:8083/cart/usercartitems/'+sessionStorage.getItem("userId"))
+.then(function(response){
+
+	$scope.cartitems1=response.data; 
+	$log.info($scope.cartitems1);
+	
+});
+dataToSend = JSON.stringify($scope.cartitems1 );
+
+ 
+//  for(var i=0; i<=dataToSend.size();i++){
+ 
+// $http.get('http://10.177.2.81:8080/product/checkForQuantity/' + $scope.cartitems1.productid[i] + '/' + $scope.cartitems1.merchantid[i] + '/' + $scope.cartitems1.quantity[i])
+// 				.then(function (response) {
+// 					//log.info(response);
+// 					log.info(response);
+// 				});
+// }
+$http.post('http://localhost:8086/order/buyall/', dataToSend, { header: { Accept: "Application:json ; charset=utf-8" } })
+				.then(function (response) {
+					$log.info(response.data);
+
+					// window.location = "productdesc.html";
+
+				});
+
+				$http.get('http://localhost:8083/cart/removeallfromcart/' + sessionStorage.getItem("userId"))
+					.then(function (response) {
+
+						$log.info("deleted");
+						
+					});
+
+
+window.location='cartpractice.html';
+				// $http.get('http://10.177.2.81:8080/product/updateQuantity/' + productId + '/' + merchantId + '/' + Quantity).then(function (response) {
+				// 	$log.info(response);
+
+				// });
+				// $http.get('http://10.177.2.81:8081/merchant/updateMerchantQuantity/' + merchantId + '/' + Quantity).then(function (response) {
+				// 	$log.info(response);
+
+				// });
+
+
+				// $http.get('http://localhost:8086/order/sendemail/' + localStorage.getItem("email") + '/subject/thanksforordering')
+				// 	.then(function (response) {
+				// 		alert("sent mail successfully!!!");
+
+				// 	});
+
+				// $http.get('http://localhost:8083/cart/removefromcart/' + cartId)
+				// 	.then(function (response) {
+
+				// 		$log.info("deleted");
+				// 		alert("Deleted from Cart successfully!!!");
+				// 	});
+			}
+		});
+		
+
+
+// $scope.sampleFuncUpdate=function(cartId, Quantity){
+// 	            var data = {
+
+// 	              quantity : Quantity
+// 	            }
+// 	            $http.post('http://localhost:8083/cart/updatetocart/'+cartId+'/', data, {header: {Accept: "Application:json ; charset=utf-8"}}).then(function(response){
+// 	            	$log.info(response.data);
+
+// 	            });
+// 	         }
+
+	</script>
+
+</head>
+
+<body>
+	
+			
+			<div ng-app="angularApp1" ng-controller="MainCtrl">
+						<div class="divcls" ><br>
+							<div class="divcls1">
+								<img src="logo2.png" alt="image loading..wait" height="100" width="180"/> 	</div> 
+								<div align="center">
+							<select height="25" class="menu" name="attributes" ng-model="selectedtype" ng-change="selectingOption(selectedtype)">
+							  <option value="" selected>Select Type</option>
+							  <option value="Phone">phones</option>
+							  <option value="book">books</option>
+							  <option value="shoes">shoes</option>
+							</select>
+							<input class="SearchBar" text-align="center" type="text" placeholder="search.." size="100" ng-model="searchterm"/>
+							<button ng-click="sampleFunction(searchterm)">search</button>
+					
+					</div>
+						  <div align="right"><br>
+							<button onclick="window.location='cartpractice.html'">Cart</button>
+							<button onclick="window.location='profile.html'">Profile</button>
+							<button onclick="window.location='history1.html'">My Orders</button>
+							<button onclick="location.href='index.html'">Home</button>
+							<button ng-click="buttonClick()">{{buttonName}}</button>
+								  </div>
+						  </div>
+				<div class="cart78" align="right">
+					<button ng-click="sampleFunc4()">DeleteAll</button>
+					<button ng-click="BuyAll()">BuyAll</button>
+				</div>
+
+				
+				
+				<div ng-repeat="item in cart1 track by $index" class="cart3">
+					<table width="100%">
+						<div>
+							<th>Product Name</th>
+						</div>
+						<div>
+							<th>Merchant Name</th>
+						</div>
+						<div>
+							<th>userid</th>
+						</div>
+						<div>
+							<th>price</th>
+						</div>
+						<div>
+							<th>Quantity</th>
+						</div>
+
+						<tr align="center">
+
+
+							<tr align="center">
+								<td ng-model="productname1">{{item.productName}}</td>
+								<td ng-model="merchantname1">{{item.merchantName}}</td>
+
+
+								<td ng-model="userid">{{userid}}</td>
+								<td ng-model="price">{{item.price*cart[$index].quantity}} </td>
+								<td>
+									<input type="number" min="1"  ng-model="cart[$index].quantity" />
+								</td>
+
+								<!-- ng-model="example.value" -->
+
+								<td></td>
+								<td>
+									<button ng-click="sampleFunc3(cart[$index].cartid, cart[$index].quantity)">Update Quantity</button>
+								</td>
+								<td>
+									<button ng-click="sampleFunc2(cart[$index].cartid)">Remove</button>
+								</td>
+								<td>
+									<button ng-click="sampleFuncMail1(cart[$index].productid,cart[$index].merchantid,cart[$index].quantity,cart[$index].userid,item.price,cart[$index].cartid,item.productName,item.merchantName,addressLine1,city,pinCode)">BuyNow</button>
+
+								</td></tr></tr>
+							</table>
+						
+				</div>
+				<div align="center">
+				<label><b>Address Line</b></label> 
+        <input type="text" placeholder="Enter Address Line 1" ng-model="addressLine1" required> 
+        <span "signinform.signindiv.$invalid"></span>
+
+        
+        <label><b>City</b></label>
+        <input type="text" placeholder="Enter City" ng-model="city" required>
+        <span "signinform.signindiv.$invalid"></span>
+
+        
+
+        <label><b>Pincode</b></label>
+        <input type="number" placeholder="Enter Pincode" ng-model="pinCode" required>
+        <span "signinform.signindiv.$invalid"></span>
+</div>	
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>
